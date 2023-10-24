@@ -1,0 +1,32 @@
+version: "3"
+
+volumes:
+  mongosend:
+
+
+services:
+  whatsapp-mongo:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopassword
+      MONGO_INITDB_DATABASE: dbwhatsapp
+
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo.entrypoint.js:/docker-entrypoint-initdb.d/entrypoint.js:ro
+      - mongosend:/data/db
+
+  whatsapp-api:
+    ports:
+      - 4550:4550
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+
+    restart: unless-stopped
